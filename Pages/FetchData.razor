@@ -1,0 +1,80 @@
+﻿@*@page "/fetchdata"
+
+@using MauiApp1.Data
+@using MauiApp1.Services;
+@using MauiApp1.Models;
+@inject INew_KullaniciService KullaniciService
+@inject NavigationManager NavigationManager
+
+<h1>Kullanıcı Listesi </h1>
+
+
+@if (_kullanici == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{ <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Surname</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var student in _kullanici)
+                {
+                    <tr>
+                        <td>@student.Name</td>
+                        <td>@student.Surname</td>
+                        <td>@student.Username</td>
+                        <td>@student.Email</td>
+                        <td>
+                            <button type="submit" @onclick="@(()=> EditKullanici(student.ID))" class="btn btn-primary">EDIT</button>
+
+                        </td>
+                        <td>
+
+                            <button type="submit" @onclick="@(()=> DeleteKullanici(student))" class="btn btn-primary">DELETE</button>
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+        }
+
+    
+
+@code {
+    private List<TBL_KULLANICI> _kullanici;
+    TBL_KULLANICI kul = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _kullanici = await KullaniciService.GetAllKullanici();
+    }
+
+    private async void DeleteKullanici(TBL_KULLANICI kullanici)
+    {
+        var delete = await KullaniciService.DeleteKullanici(kullanici);
+        if (delete > 0)
+        {
+            await OnInitializedAsync();
+            this.StateHasChanged();
+        }
+    }   
+
+    private void EditKullanici(int ID)
+    {
+       
+        
+        NavigationManager.NavigateTo($"/editUser/{ID}");
+    }
+}
+
+*@

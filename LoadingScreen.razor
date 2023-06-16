@@ -1,0 +1,31 @@
+﻿@if (IsLoading)
+{
+    if (LoadingTemplate != null)
+    {
+        @LoadingTemplate
+    }
+    else
+    {
+        <div style="display: inline-block; margin-left:45%; color:white" class="spinner-border"></div>
+        <span style="display: inline-block; color:white; vertical-align:super; font-weight:bold">@LoadingText</span>
+
+    }
+}
+else
+{
+    @ChildContent
+}
+
+@code {
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    [Parameter]
+    public string LoadingText { get; set; } = "Loading...";
+
+    [Parameter]
+    public RenderFragment LoadingTemplate { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

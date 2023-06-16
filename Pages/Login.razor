@@ -1,0 +1,131 @@
+﻿@page "/Login"
+@layout LoginLayout
+@using MauiApp1.Models;
+@using MauiApp1.Services;   
+@using System.IdentityModel.Tokens.Jwt;
+@using System.Security.Claims;
+@using Newtonsoft.Json;
+@inject IKullaniciService KullaniciService;
+@inject NavigationManager NavigationManager
+
+<EditForm Model="@kullanici" OnValidSubmit="@login">
+    <DataAnnotationsValidator/>
+<div class="card" style="background-color:lightgray; width:100%; margin-top:10%; ">
+
+    <span><br /></span>
+
+    <div class="col-md-12" style="width:100%;  margin-left:20%;">
+        <label style="float:left; font-family:Candara; margin-left:auto; font-weight:bold; font-size: 20px; color:rebeccapurple; width:11%;">USERNAME</label>
+        <input @bind="kullanici.Username" style="float:left; width:40%;" type="text" class="form-control" placeholder="Enter Username" />
+        
+    </div>
+    <span><br /></span>
+
+    <div class="col-md-6" style="width:100%;  margin-left:20%; ">
+        <label style="float:left; font-family:Candara; margin-left:auto; font-weight:bold; font-size: 20px; color:rebeccapurple; width:11%;">PASSWORD</label>
+        <input @bind="kullanici.Password" style="float:left; width:40%;" type="password" class="form-control" placeholder="Enter Password" />
+    </div>
+
+    <span><br /></span>
+    <div class="col-md-6" style="width:100%; margin-left:56%; ">
+        <button class="button" style="float:left; background-color: #a0a9ee;" type="submit">LOGIN</button>
+        <span><br /></span>
+       
+    </div>
+
+
+        <div class="col-md-6">
+            <NavLink class="nav-link" href="NewUser">
+                <span>Kayıt ol</span>
+
+            </NavLink>
+
+        </div>
+
+
+</div>
+
+</EditForm>
+
+
+<style>
+    body {
+        background-color: lightgray;
+        background-size: contain;
+
+    }
+
+    .button {
+        width: 15%;
+        height: 15%;
+        overflow: auto;
+        font-family: 'Heebo', sans-serif;
+        font-size: 28px;
+        font-weight: 600;
+        letter-spacing: 10px;
+        color: #FFFFFF;
+        border-radius: 0.9375rem;
+        -webkit-border-radius: 0.9375rem;
+        -moz-border-radius: 0.9375rem;
+        border-style: ridge;
+        border-width: 0.25rem;
+        border-color: #97b8e2;
+       
+    }
+</style>
+
+@code {
+    TBL_KULLANICI kullanici = new();
+    private string txt_username; 
+    private string txt_password;
+
+    private string spinner = "";
+
+    public async void login()
+    {
+        spinner = "spinner-border spinner-border-sm";
+        var response = await KullaniciService.Login_Kullanici(kullanici);
+        if (!string.IsNullOrWhiteSpace(response))
+        {
+            var tokenResponse = JsonConvert.DeserializeObject<AuthenticateRequestAndResponse>(response.ToString());
+
+            var handler = new JwtSecurityTokenHandler();
+            var jsontoken = handler.ReadToken(tokenResponse.AccessToken) as JwtSecurityToken;
+
+            //await App.Current.MainPage.DisplayAlert("Oopss", "Valid username and password!", "OK");
+            //var handler = new JwtSecurityTokenHandler();
+            //var jsontoken = handler.ReadToken(response) as JwtSecurityToken;
+
+            string userID = jsontoken.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.NameId).Value;
+            string name = jsontoken.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Name).Value;
+            string username = kullanici.Username;
+
+            var kul_Detay = new KullaniciDetay
+                {
+                    UserName = username,
+                    Name = name,
+                    Token = response,
+                    UserID = userID
+
+                };
+
+            string kullanici_info = JsonConvert.SerializeObject(kul_Detay);
+
+
+            await SecureStorage.SetAsync(nameof(Ayarlar.KullaniciDetay),kullanici_info);
+            Ayarlar.KullaniciDetay = kul_Detay;
+
+
+            NavigationManager.NavigateTo("/GamePage");
+
+        }
+        else
+        {
+            await App.Current.MainPage.DisplayAlert("Oopss", "Invalid username or password!","OK");
+        }
+        spinner = "";
+        this.StateHasChanged();
+        // NavigationManager.NavigateTo("/GamePage");
+    }
+
+}

@@ -1,0 +1,110 @@
+﻿@page "/GamePage"
+
+@inject NavigationManager NavigationManager
+
+
+
+<div class="body">
+    <div class="page">
+    <div class="sidebar">
+    <NavMenu />
+    </div>
+    </div>
+<div class="row-cols-auto" style="width:80%;">
+
+ 
+    <label class="label">HANGİ OYUNU OYNAMAK İSTERSİN?</label>
+
+
+</div>
+
+
+<div class="align-items-center" style=" margin-left:7.5%;  width: 80%;">
+    
+        <button class="button"  name="Toplama">Toplama</button>
+        <button class="button" name="Çıkarma">Çıkarma</button>
+        <button class="button" name="Çarpma">Çarpma</button>
+        <button class="button" name="Bölme">Bölme</button>
+
+</div>
+
+<div class="align-items-center" style=" margin-left:8.5%;">
+
+    <button class="button1">Hadi Sonuçlara Bakalım</button>
+    
+</div>
+
+</div>
+
+<style>
+
+    body{
+        background-color:lightgray;
+        background-size: contain;
+    }
+    
+    .label{
+       
+        margin-top: 5%;
+        margin-left:15%;
+        font-size: 28px;
+        font-family: 'Heebo', sans-serif;
+        font-weight: 700;
+        border-radius: 0.625rem;
+        color: #836ebf;
+        border-width: 20px;
+        border-color: #97b8e2;
+        letter-spacing: 10px;
+    }
+    .button{
+        width:20%;
+        height:20%;
+        margin-top: 5%;
+        margin-left: 3%;
+        font-size: 20px;
+        background-color: #a0a9ee;
+      
+        font-family: 'Heebo', sans-serif;
+        font-weight: 600;
+        letter-spacing: 10px;
+        color: #FFFFFF;
+        border-radius: 0.9375rem;
+        -webkit-border-radius: 0.9375rem;
+        -moz-border-radius: 0.9375rem;
+        border-style: ridge;
+        border-width: 0.25rem;
+        border-color: #97b8e2;
+    }
+
+    .button1 {
+        width: 80%;
+        height: 20%;
+        margin-top: 5%;
+        margin-left:2%;
+        font-size: 20px;
+        background-color: seagreen;
+        font-family: 'Heebo', sans-serif;
+        font-weight: 600;
+        letter-spacing: 10px;
+        color: #FFFFFF;
+        border-radius: 0.9375rem;
+        -webkit-border-radius: 0.9375rem;
+        -moz-border-radius: 0.9375rem;
+       
+    }
+
+</style>
+
+@code {
+
+    public async Task oyun(object sender)
+    {
+      
+        Button button = (Button)sender;
+        NavigationManager.NavigateTo("/IslemPage" + button.Text);
+
+
+        
+    }
+
+}

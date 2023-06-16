@@ -1,0 +1,193 @@
+﻿@page "/NewUser"
+@page "/editUser/{ID:int}"    
+@using MauiApp1.Services;
+@using MauiApp1.Models;
+@layout NewUserLayout
+@inject IKullaniciService KullaniciService
+@inject NavigationManager NavigationManager
+
+<EditForm Model="@new_kullanici" OnValidSubmit="@Save">
+    <DataAnnotationsValidator/>
+<div class="card" style="background-color:lightgray; width:100%; margin-top:10%; ">
+
+    <span><br /></span>
+
+    <div class="col-md-12" style="width:100%;  margin-left:20%;">
+        <label style="float:left; font-family:Candara; margin-left:auto; font-weight:bold; font-size: 20px; color:rebeccapurple; width:11%;">NAME</label>
+        <input @bind="new_kullanici.Name" style="float:left; width:40%;" type="text" class="form-control" placeholder="Enter Name" />
+       
+    </div>
+    <span><br /></span>
+
+    <div class="col-md-12" style="width:100%;  margin-left:20%;">
+        <label style="float:left; font-family:Candara; margin-left:auto; font-weight:bold; font-size: 20px; color:rebeccapurple; width:11%;">SURNAME</label>
+        <input @bind="new_kullanici.Surname"  style="float:left; width:40%;" type="text" class="form-control" placeholder="Enter Surname" />
+    </div>
+    <span><br /></span>
+
+    <div class="col-md-12" style="width:100%;  margin-left:20%;">
+        <label style="float:left; font-family:Candara; margin-left:auto; font-weight:bold; font-size: 20px; color:rebeccapurple; width:11%;">EMAIL</label>
+        <input @bind="new_kullanici.Email" style="float:left; width:40%;" type="email" class="form-control" placeholder="Enter Email" />
+    </div>
+    <span><br /></span>
+
+    <div class="col-md-12" style="width:100%;  margin-left:20%;">
+        <label style="float:left; font-family:Candara; margin-left:auto; font-weight:bold; font-size: 20px; color:rebeccapurple; width:11%;">USERNAME</label>
+        <input @bind="new_kullanici.Username" style="float:left; width:40%;" type="text" class="form-control" placeholder="Create Username" />
+    </div>
+    <span><br /></span>
+
+    <div class="col-md-6" style="width:100%;  margin-left:20%; ">
+        <label style="float:left; font-family:Candara; margin-left:auto; font-weight:bold; font-size: 20px; color:rebeccapurple; width:11%;">PASSWORD</label>
+        <input @bind="new_kullanici.Password" style="float:left; width:40%;" type="password" class="form-control" placeholder="Create Password" />
+    </div>  
+    <span><br /></span>
+
+    <div class="col-md-6" style="width:100%;  margin-left:20%; ">
+        <label style="float:left; font-family:Candara; margin-left:auto; font-weight:bold; font-size: 20px; color:rebeccapurple; width:11%;">PASSWORD AGAIN</label>
+        <input @bind="new_kullanici.Password_tekrar" style="float:left; width:40%;" type="password" class="form-control" placeholder="Enter Password Again" />
+    </div>
+    <span><br /></span>
+
+  <div class="col-md-6">
+      <NavLink class="nav-link" href="login">
+          <span>Hesabın var mı?</span>
+
+      </NavLink>
+
+  </div>
+
+    <div class="col-md-6" style="width:100%; margin-left:51%; ">
+        <button class="button" style="float:left; background-color: #a0a9ee;" type="submit">KAYIT OL</button>
+  
+    </div>
+
+</div>  
+
+</EditForm>
+
+<style>
+    body {
+        background-color: lightgray;
+    }
+
+    .button {
+        width: 20%;
+        height: 15%;
+        overflow: auto;
+        font-family: 'Heebo', sans-serif;
+        font-size: 24px;
+        font-weight: 600;
+        letter-spacing: 10px;
+        color: #FFFFFF;
+        border-radius: 0.9375rem;
+        -webkit-border-radius: 0.9375rem;
+        -moz-border-radius: 0.9375rem;
+        border-style: ridge;
+        border-width: 0.25rem;
+        border-color: #97b8e2;
+    }
+</style>
+
+@code {
+    TBL_NEW_KULLANICI new_kullanici = new();
+
+    [Parameter]
+    public int ID  { get; set; }
+
+    private string username;
+    private string password;
+    private string password2;
+    private string name;
+    private string surname;
+    private string email;
+
+    private string spinner = "";
+
+    public async void Save()
+    {
+        spinner = "spinner-border spinner-border-sm";
+        var response = await KullaniciService.New_Kullanici(new_kullanici);
+        if (response.IsSuccess)
+        {
+            await App.Current.MainPage.DisplayAlert("Oopss", "Kayıt Başarılı!", "OK");
+            NavigationManager.NavigateTo("/Login");
+
+        }
+        else
+        {
+            await App.Current.MainPage.DisplayAlert("Oopss", "Kayıt Başarısız!", "OK");
+        }
+        spinner = "";
+        this.StateHasChanged();
+        // NavigationManager.NavigateTo("/GamePage");
+    }
+
+
+
+    //protected async override Task OnInitializedAsync()
+    //{
+    //    if (ID > 0)
+    //    {
+    //        var response = await KullaniciService.GetKullaniciByID(ID);
+    //        if (response != null)
+    //        {
+    //            username = response.Username;
+    //            password = response.Password;
+    //            password2 = response.Password_tekrar;
+    //            surname = response.Surname;
+    //            email = response.Email;
+    //            name = response.Name;
+    //        }
+    //    }
+    //}
+
+
+    //public async Task Save()
+    //{
+
+    //    if(password != password2)
+    //    {
+    //        await App.Current.MainPage.DisplayAlert("Oopss", "Şifreler eşleşmiyor", "OK");
+    //    }
+
+    //    var kul_model = new Models.TBL_NEW_KULLANICI
+    //        {
+    //            Name = name,
+    //            Surname = surname,
+    //            Email = email,
+    //            Password = password,
+    //            Password_tekrar = password2,
+    //            Username = username,
+    //            ID = ID
+    //        };
+
+    //    int response = -1;
+    //    if (ID > 0)
+    //    {
+    //        //update
+    //        response = await KullaniciService.UpdateKullanici(kul_model);
+    //        NavigationManager.NavigateTo("/fetchdata");
+    //    }
+    //    else
+    //    {  //add
+    //        response = await KullaniciService.AddKullanici(kul_model);
+           
+    //    }
+
+      
+        
+    //    if (response > 0)
+    //    {
+    //        name = surname = email = password = password2 = username = string.Empty;
+    //        this.StateHasChanged();
+    //        await App.Current.MainPage.DisplayAlert("Kaydedildi", "Kayıt Başarılı", "OK");
+    //        NavigationManager.NavigateTo("/Login");
+    //    }
+    //    else
+    //    {
+    //        await App.Current.MainPage.DisplayAlert("Oopss", "Ters giden bir şeyler var", "OK");
+    //    }
+          
+    //}
+}

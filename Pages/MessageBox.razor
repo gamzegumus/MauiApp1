@@ -1,0 +1,62 @@
+﻿@*@using MudBlazor;
+
+<MudPopover @bind="@PopupVisible" @ref=@popup
+            CloseButtonClick="@NegativeButtonClicked"
+            CloseOnEscape="false"
+            CloseOnOutsideClick="false"
+            ShowCloseButton="false"
+            ShowFooter="true"
+            HeaderText=@Header>
+  
+</MudPopover>
+
+
+@code {
+    [Parameter]
+    public EventCallback<bool> MessageBoxClosed { get; set; }
+    [Parameter]
+    public bool PopupVisible { get; set; }
+    [Parameter]
+    public string AffirmativeButtonText { get; set; } = "Okey";
+    [Parameter]
+    public string NegativeButtonText { get; set; } = "Cancel";
+   
+    public string Message { get; set; } 
+  
+    public string Header { get; set; }
+
+
+
+    [Parameter]
+    public bool ShowCancelButton { get; set; } = true;
+
+    MudPopover popup;
+    bool IsDialogResultAffirmative { get; set; }
+
+    TaskCompletionSource<bool>? tcs;
+
+
+    public Task<bool> ShowAsync(string header,string message)
+    {
+        PopupVisible = true;
+        Header = header;
+        Message = message;
+
+        tcs = new TaskCompletionSource<bool>();
+        tcs.Task.ContinueWith(_ =>
+        {
+            PopupVisible = false;
+        });
+        StateHasChanged();
+        return tcs.Task;
+    }
+
+
+    void AffirmativeButtonClicked() {
+        tcs?.SetResult(true);
+    }
+    void NegativeButtonClicked() {
+        tcs?.SetResult(false);
+    }
+
+}*@
